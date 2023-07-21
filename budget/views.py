@@ -67,8 +67,8 @@ class TransactionAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Ge
                 description=request.data['description'],
                 narration=request.data['narration'],
                 initial_balance=account.balance,
-                mode=request.data['mode'],
-                bill_img=request.FILES['bill_img']
+                mode=request.data['mode']
+                # bill_img=request.FILES['bill_img']
             )
             return JsonResponse({'message': 'Transaction submitted successfully'}, status=status.HTTP_201_CREATED)
         except Exception as e:
