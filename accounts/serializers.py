@@ -11,6 +11,8 @@ from django.urls import reverse
 from budget.models import BankAccount
 from .utils import Util
 from django.conf import settings
+from datetime import datetime as dt
+from datetime import timedelta
 
 User = get_user_model()
 
@@ -38,7 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'username', 'firstname', 'lastname', 'dateofbirth', 'gender', 'phonenumber', 'profilepic', 'gov_id_num', 'gov_id_img', 'card_img']
+        fields = ['email', 'username', 'firstname', 'lastname', 'dateofbirth', 'gender', 'phonenumber', 'profilepic', 'gov_id_num', 'gov_id_img', 'card_img', 'points']
 
 class VerificationSerializer(serializers.ModelSerializer):
     token = serializers.CharField(max_length=666)
@@ -74,6 +76,11 @@ class LoginSerializer(serializers.ModelSerializer):
 
         tokens = RefreshToken.for_user(user=auth_user)
         account = BankAccount.objects.get(user=auth_user)
+        user = User.objects.get(username=username)
+        if user.last_login != dt.now().date():
+            user.points = user.points + 1
+        user.last_login = dt.now()
+        user.save()
         return {
             'username': auth_user.username,
             'refresh': str(tokens),

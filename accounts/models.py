@@ -147,12 +147,15 @@ class User(AbstractBaseUser):
     
 @receiver(post_save, sender=User)
 def add_government_id(sender, instance, **kwargs):
-    if instance.gov_id_num is None and instance.gov_id_img is not None:
-        dob, number = get_gov_doc(instance.gov_id_img.path)
-        formatted_dob = dt.strptime(dob, '%d/%m/%Y').strftime('%Y-%m-%d')
-        instance.gov_id_num = number
-        instance.dateofbirth = formatted_dob
-        instance.save()
+    try:
+        if instance.gov_id_num is None and instance.gov_id_img is not None:
+            dob, number = get_gov_doc(instance.gov_id_img.path)
+            formatted_dob = dt.strptime(dob, '%d/%m/%Y').strftime('%Y-%m-%d')
+            instance.gov_id_num = number
+            instance.dateofbirth = formatted_dob
+            instance.save()
+    except Exception as e:
+        pass
 
     
 class PhoneNumberVerify(models.Model):

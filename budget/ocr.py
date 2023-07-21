@@ -35,8 +35,9 @@ def get_details(concat_output):
 
     price = re.findall(r'[\$\$\£\€\₹](\d+(?:\.\d{1,2})?)', concat_output)
     price = list(map(float, price))
-    total_bill = max(price)
-
+    if price:
+        total_bill = max(price)
+    
     return reciever, bill_date, total_bill
 
 

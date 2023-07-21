@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import Budget, BankAccount, Transaction, OCR
+from .models import Budget, BankAccount, Transaction, OCR, Coupons
 
 class BudgetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Budget
-        fields = ['user', 'account', 'name', 'start_date', 'end_date', 'limit', 'description', 'goal_amount', 'goal_img', 'recurrence']
+        fields = ['user', 'account', 'name', 'start_date', 'end_date', 'limit', 'current_limit', 'description', 'goal_amount', 'goal_img', 'recurrence']
 
 class BankAccountSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,3 +20,13 @@ class OCRSerializer(serializers.ModelSerializer):
     class Meta:
         model = OCR
         fields = ['image']
+
+class CouponsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupons
+        fields = ['pk', 'name', 'category', 'discount', 'expiry_date', 'value_points']
+
+class CouponCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupons
+        fields = ['coupon_code', 'expiry_date', 'value_points']

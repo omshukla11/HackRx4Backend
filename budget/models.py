@@ -62,6 +62,7 @@ class Budget(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     limit = models.DecimalField(max_digits=10, decimal_places=2)
+    current_limit = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     description = models.TextField(blank=True, null=True)
     goal_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     goal_img = models.ImageField(blank=True, null=True, upload_to=upload_goal_img_path_handler)
@@ -86,7 +87,8 @@ class Transaction(models.Model):
         ('NEF', 'NEFT'),
         ('RTG', 'RTGS'),
         ('CRE', 'Credit Card'),
-        ('DEB', 'Debit Card')
+        ('DEB', 'Debit Card'),
+        ('OTH', 'Others')
     )
     transaction_type_choices = (
         ('DEB', 'Debit'),
@@ -128,6 +130,8 @@ def check_account_details(sender, instance, **kwargs):
 def update_balance(sender, instance, **kwargs):
     try:
         user = User.objects.get(id=instance.user.id)
+        user.points = user.points + 5
+        user.save()
         account = BankAccount.objects.get(id=instance.account.id, user=user)
         if(instance.transaction_type == 'DEB'):
             if(account.balance < instance.amount):
@@ -139,7 +143,7 @@ def update_balance(sender, instance, **kwargs):
                 account.balance = account.balance - instance.amount
             try:
                 budget = Budget.objects.get(user=user, account=account, category=instance.category)
-                budget.limit = budget.limit - instance.amount
+                budget.current_limit = budget.current_limit - instance.amount
                 budget.save()
             except Budget.DoesNotExist as e:
                 pass
@@ -147,7 +151,7 @@ def update_balance(sender, instance, **kwargs):
             account.balance = account.balance + instance.amount
             try:
                 budget = Budget.objects.get(user=user, account=account, category=instance.category)
-                budget.limit = budget.limit + instance.amount
+                budget.current_limit = budget.current_limit + instance.amount
                 budget.save()
             except Budget.DoesNotExist as e:
                 pass
@@ -159,3 +163,15 @@ def update_balance(sender, instance, **kwargs):
     
 class OCR(models.Model):
     image = models.ImageField(upload_to=upload_img_ocr_path_handler)
+
+class Coupons(models.Model):
+    name = models.CharField(max_length=255, default='Coupon')
+    category = models.CharField(max_length=255, choices=(('Food', 'Food'), ('Shopping', 'Shopping'), ('Transport', 'Transport')))
+    coupon_code = models.CharField(max_length=255, unique=True)
+    discount = models.IntegerField(default=10)
+    expiry_date = models.DateField()
+    value_points = models.IntegerField(default=100)
+
+    def __str__(self):
+        return self.coupon_code
+    
