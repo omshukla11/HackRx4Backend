@@ -195,3 +195,19 @@ class RedeemCouponAPI(mixins.RetrieveModelMixin, generics.GenericAPIView):
             return JsonResponse({'message': "Coupon valid & redeemed", "code": coupon.coupon_code}, status=status.HTTP_200_OK)
         except Exception as e:
             return JsonResponse({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+class MessageTransactionsAPI(mixins.CreateModelMixin, generics.GenericAPIView):
+    serializer_class = TransactionSerializer
+
+    def post(self,request, *args, **kwargs):
+        try:
+            for message in request.data["messages"]:
+                temp_list = message.split(" ")
+                masked_account_no = "XXXXXX"+temp_list[1][1:]
+                formatted_date_list = temp_list[6].split("-")
+                formatted_date = formatted_date_list[2]+"-"+formatted_date_list[1]+"-"+formatted_date_list[0]
+                account = BankAccount.objects.get(masked_account_no=masked_account_no, user=request.user)
+                Transaction.objects.create( user= request.user, account= account, transaction_type= temp_list[2][:3].upper(), category= "Others", amount= Decimal(temp_list[4][3:]), timestamp= dt.fromisoformat(formatted_date), narration= " ".join(temp_list[9:14]), initial_balance= account.balance, mode= "UPI" )
+            return JsonResponse({'message': 'Transaction submitted successfully!!'}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return JsonResponse({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
