@@ -59,10 +59,10 @@ class TransactionAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Ge
         try:
             account = BankAccount.objects.get(id=int(request.data['account']), user=user)
             try:
-                stamp = dt.strptime(request.data['timestamp'], '%Y/%m/%d').timestamp()
+                stamp = dt.strptime(request.data['timestamp'], '%y/%m/%d').timestamp()
             except Exception as e:
                 try:
-                    stamp = dt.strptime(request.data['timestamp'], '%Y-%m-%d').timestamp()
+                    stamp = dt.strptime(request.data['timestamp'], '%y-%m-%d').timestamp()
                 except Exception as e:
                     stamp = dt.now().timestamp()
             transaction = Transaction.objects.create(
