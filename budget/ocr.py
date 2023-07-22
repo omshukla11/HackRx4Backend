@@ -39,7 +39,7 @@ def get_details(concat_output):
     price = list(map(float, price))
     price = sorted(price)
     if price:
-        total_bill = price[-3]
+        total_bill = price[0]
     
     return reciever, bill_date, total_bill
 

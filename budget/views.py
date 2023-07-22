@@ -58,20 +58,36 @@ class TransactionAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Ge
         user = request.user
         try:
             account = BankAccount.objects.get(id=int(request.data['account']), user=user)
-            transaction = Transaction.objects.create(
-                user=user,
-                account=account,
-                category=request.data['category'],
-                transaction_type=request.data['transaction_type'],
-                amount=Decimal(request.data['amount']),
-                timestamp=dt.fromisoformat(request.data['timestamp']),
-                description=request.data['description'],
-                narration=request.data['narration'],
-                initial_balance=account.balance,
-                mode=request.data['mode']
-                # bill_img=request.FILES['bill_img']
-            )
-            return JsonResponse({'message': 'Transaction submitted successfully'}, status=status.HTTP_201_CREATED)
+            try:
+                transaction = Transaction.objects.create(
+                    user=user,
+                    account=account,
+                    category=request.data['category'],
+                    transaction_type=request.data['transaction_type'],
+                    amount=Decimal(request.data['amount']),
+                    timestamp=dt.fromisoformat(request.data['timestamp']).timestamp(),
+                    description=request.data['description'],
+                    narration=request.data['narration'],
+                    initial_balance=account.balance,
+                    mode=request.data['mode']
+                    # bill_img=request.FILES['bill_img']
+                )
+                return JsonResponse({'message': 'Transaction submitted successfully'}, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                transaction = Transaction.objects.create(
+                    user=user,
+                    account=account,
+                    category=request.data['category'],
+                    transaction_type=request.data['transaction_type'],
+                    amount=Decimal(request.data['amount']),
+                    timestamp=dt.now().timestamp(),
+                    description=request.data['description'],
+                    narration=request.data['narration'],
+                    initial_balance=account.balance,
+                    mode=request.data['mode']
+                    # bill_img=request.FILES['bill_img']
+                )
+                return JsonResponse({'message': 'Transaction submitted successfully!!'}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return JsonResponse({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
