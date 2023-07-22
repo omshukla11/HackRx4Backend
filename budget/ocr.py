@@ -1,6 +1,7 @@
 from google.cloud import vision
 import re, os
 import nltk
+nltk.download('punkt')
 from nltk.corpus import wordnet
 
 def get_text_from_image(image_path):
