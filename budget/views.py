@@ -64,7 +64,7 @@ class TransactionAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Ge
                 category=request.data['category'],
                 transaction_type=request.data['transaction_type'],
                 amount=Decimal(request.data['amount']),
-                timestamp=request.data['timestamp'],
+                timestamp=dt.fromisoformat(request.data['timestamp']),
                 description=request.data['description'],
                 narration=request.data['narration'],
                 initial_balance=account.balance,
