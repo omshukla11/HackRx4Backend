@@ -35,7 +35,7 @@ def get_details(concat_output):
     sent_tokens = nltk.sent_tokenize(concat_output)
     reciever = sent_tokens[0].splitlines()[0]
 
-    price = re.findall(r'(\d+(?:\.\d{1,2})?)', concat_output)
+    price = re.findall(r'Total:\s*(?:₹)?(\d+)', concat_output)
     price = list(map(float, price))
     price = sorted(price)
     if price:
