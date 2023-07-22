@@ -1,7 +1,9 @@
 from google.cloud import vision
 import re, os
 import nltk
+nltk.download('punkt')
 from nltk.corpus import wordnet
+nltk.download('wordnet')
 
 def get_text_from_image(image_path):
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'hackrx-393212-93ebb5994abd.json'
