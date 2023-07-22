@@ -150,7 +150,13 @@ class OCRAPI(mixins.CreateModelMixin, generics.GenericAPIView):
             print(ocr.image.path)
             reciever, bill_date, total_bill, category = get_bill_details(ocr.image.path)
             print(reciever, bill_date, total_bill, category)
-            formatted_bill_date = dt.strptime(bill_date, '%d/%m/%Y').strftime('%Y-%m-%d')
+            try:
+                formatted_bill_date = dt.strptime(request.data['timestamp'], '%y/%m/%d').strftime('%Y-%m-%d')
+            except Exception as e:
+                try:
+                    formatted_bill_date = dt.strptime(request.data['timestamp'], '%y-%m-%d').strftime('%Y-%m-%d')
+                except Exception as e:
+                    formatted_bill_date = dt.now().strftime('%Y-%m-%d')
             return JsonResponse({"reciever": reciever, "bill_date":formatted_bill_date, "total_bill": float(total_bill), "category": category}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return JsonResponse({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
