@@ -1,7 +1,5 @@
 import re
 import nltk, os
-nltk.download('punkt')
-nltk.download('wordnet')
 from google.cloud import vision
 
 def get_text_from_image(image_path):
