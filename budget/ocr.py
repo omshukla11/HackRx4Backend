@@ -41,7 +41,7 @@ def get_details(concat_output):
     if price:
         total_bill = price[0]
     
-    return reciever, bill_date, total_bill
+    return reciever, bill_date, 20
 
 
 def process_text(concat_output):
