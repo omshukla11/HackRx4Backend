@@ -24,7 +24,7 @@ def get_text_from_image(image_path):
     return all_text
 
 def get_details(concat_output):
-    match = re.findall(r'\d+[/.-]\d+[/.-]\d{4}', concat_output)
+    match = re.findall(r'\d+[/.-]\d+[/.-]\d{2}', concat_output)
 
     bill_date = ""
     reciever = ""
@@ -35,10 +35,11 @@ def get_details(concat_output):
     sent_tokens = nltk.sent_tokenize(concat_output)
     reciever = sent_tokens[0].splitlines()[0]
 
-    price = re.findall(r'[\$\$\£\€\₹](\d+(?:\.\d{1,2})?)', concat_output)
+    price = re.findall(r'(\d+(?:\.\d{1,2})?)', concat_output)
     price = list(map(float, price))
+    price = sorted(price)
     if price:
-        total_bill = max(price)
+        total_bill = price[-2]
     
     return reciever, bill_date, total_bill
 
